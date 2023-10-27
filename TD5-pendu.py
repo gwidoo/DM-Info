@@ -60,10 +60,9 @@ class FenPrincipale(Tk):
         self.__boutons=[]
         for i in range(0,26):
             #chaque bouton est un élément de la classe MonBoutonLettre
-            self.__buttoni=MonBoutonLettre(parent, fenetre, a)Button(self.__clavier,text = chr(ord('A')+i)) #la commande t = chr(ord('A')+i) transforme un entier en une chaîne de caractère
+            self.__buttoni=MonBoutonLettre(self.__clavier, self, chr(ord('A')+i))#la commande t = chr(ord('A')+i) transforme un entier en une chaîne de caractère
             self.__boutons.append(self.__buttoni)
             self.__buttoni.config(state=DISABLED) #à l'ouverture de la page, tous les boutons sont grisés
-            self.__buttoni.config(command=self.select)
             
             #on les met mtn en forme de clavier classique grâce à la commande grid
             if i<21 :#il y a 7 lettres par ligne et 3 lignes complètes donc 21 lettres à placer en haut
@@ -71,13 +70,6 @@ class FenPrincipale(Tk):
             else:
                 self.__buttoni.grid(row=4,column=i%7+1) #on met à part les lettres qu'on a tout en bas du clavier, qui sont séparés d'un trou de la frame
     
-    
-    
-    def select(self,lettre):
-        print('Sélection de la lettre'+lettre)
-        
-        
-        
 ###on implémente le comportement des boutons
         
         #bouton quitter
@@ -85,6 +77,39 @@ class FenPrincipale(Tk):
         
         #bouton Nouvelle Partie
         self.__buttonNouvellePartie.config(command=self.nouvellePartie)
+    
+###EXERCICE 7   
+###on rajoute un bouton pour faire apparaitre un menu déroulant dans le but de pouvoir personnaliser les couleurs de l'interface
+        self.__buttonMenu = Button(self.__barreOutil,text='Personnaliser')
+        self.__buttonMenu.pack(side=LEFT, padx=10,pady=10)
+        self.__buttonMenu.config(bg='grey')
+        self.__buttonMenu.config(command=self.proposerMenu)
+
+        #on crée une frame dans laquelle on va ranger les boutons de personnalisation        
+
+        self.__menu=Frame(FenPrincipale,bg='black')
+        
+        #on implémente les différents boutons pour changer les couleurs
+        
+        self.__buttonColorFP = Button(self.__menu, text='CouleurFenPrin')
+        self.__buttonColorFP.pack(side=LEFT, padx=5, pady=5)
+        self.__buttonColorFP.config(command=self.selectColor)
+        
+        self.__buttonColorZA = Button(self.__menu, text='CouleurZoneAff')
+        self.__buttonColorZA.pack(side=LEFT, padx=5, pady=5)
+        self.__buttonColorZA.config(command=self.selectColor)
+        
+        self.__buttonColorCL = Button(self.__menu, text='CouleurClavier')
+        self.__buttonColorCL.pack(side=LEFT, padx=5, pady=5)
+        self.__buttonColorCL.config(command=self.selectColor)
+        
+    def selectColor(self):
+    	color = colorchooser.askcolor(color=None)
+    	self.__zoneAffichage.setColor(color[1])
+    	print(color[1])
+        
+        
+
         
         
         #on définit les fonctions relatives aux fonctionnement du jeu
@@ -170,6 +195,7 @@ class ZoneAffichage(Canvas):
         #au lancement de la partie, toutes les formes du pendu sont cachées
         self.cacheFormes()
     
+    
 ###on crée les fonctions qui permettent de cacher (au début) ou de faire apparaître les formes du pendu 
     def cacheFormes(self):
         for i in range(len(self.__listeFormes)) :
@@ -197,7 +223,7 @@ class MonBoutonLettre(Button):
         
     def cliquer(self):
         self.config(state=DISABLED)
-        self.__fenetre.traitement(self.__text) #lorsqu'on clique sur le bouton, on appelle traitement, définit dans FenPrincipale
+        self.__fenetre.traitement(self.__lettre) #lorsqu'on clique sur le bouton, on appelle traitement, définit dans FenPrincipale
         
         
      
