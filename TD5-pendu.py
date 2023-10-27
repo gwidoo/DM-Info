@@ -23,7 +23,7 @@ class FenPrincipale(Tk):
         self.title('Jeu du pendu') #on nomme la fenêtre principale
         
         #on charge le fichier de mots chargeMots
-        self.chargeMots()
+        self.__mots=self.chargeMots() #on récupère la liste de la fonction
         
         
 ###on définit la barre d'outils qui est une Frame
@@ -113,6 +113,8 @@ class FenPrincipale(Tk):
         #on efface le dessin du pendu précédent
         self.cacheFormes()
         
+    def traitement(self):
+        pass
     
     
     def traitement(self):
