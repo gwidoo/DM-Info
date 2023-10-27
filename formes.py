@@ -7,10 +7,10 @@ Created on Fri Oct 13 09:39:44 2023
 class Forme:
     def __init__(self, canevas, x, y):
         self.__canevas = canevas
-        self.__item = None
+        self.__item = 0
         self.x = x
         self.y = y
-        self.__item.set_state('hidden')
+
     
     def set_state(self, s):
         self.__canevas.itemconfig(self.__item, state=s)
