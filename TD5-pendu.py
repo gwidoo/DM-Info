@@ -19,7 +19,7 @@ from formes import *
 class FenPrincipale(Tk):
     def __init__(self):
         Tk.__init__(self)
-        self.configure(bg="pink") #on colore la fenêtre prinicipale en rose
+        self.configure(bg="purple") #on colore la fenêtre prinicipale en rose
         self.title('Jeu du pendu') #on nomme la fenêtre principale
         
         #on charge le fichier de mots chargeMots
@@ -60,7 +60,7 @@ class FenPrincipale(Tk):
         self.__boutons=[]
         for i in range(0,26):
             #chaque bouton est un élément de la classe MonBoutonLettre
-            self.__buttoni=Button(self.__clavier,text = chr(ord('A')+i)) #la commande t = chr(ord('A')+i) transforme un entier en une chaîne de caractère
+            self.__buttoni=MonBoutonLettre(parent, fenetre, a)Button(self.__clavier,text = chr(ord('A')+i)) #la commande t = chr(ord('A')+i) transforme un entier en une chaîne de caractère
             self.__boutons.append(self.__buttoni)
             self.__buttoni.config(state=DISABLED) #à l'ouverture de la page, tous les boutons sont grisés
             self.__buttoni.config(command=self.select)
@@ -91,7 +91,7 @@ class FenPrincipale(Tk):
         
         
     def chargeMots(self): #charge la liste des mots possibles
-        open('mots.txt', 'r')
+        f=open('mots.txt', 'r')
         s= f.read()
         self.__mots = s.split('\n')
         f.close()
@@ -112,15 +112,29 @@ class FenPrincipale(Tk):
                 
         #on efface le dessin du pendu précédent
         self.cacheFormes()
+      
         
-    def traitement(self):
-        pass
-    
-    
-    def traitement(self):
-        pass
-    
-    
+    def traitement(self,lettre):
+        print('Sélection de la lettre' + lettre)
+        nouveauMotCache=''
+        for i,c in enumerate(self.__motMystere):
+            if c==lettre:
+                nouveauMotCache+=lettre
+            else: 
+                nouveauMotCache+= self.__motCache[i]
+        self.__motCache=nouveauMotCache
+        self.afficheMot()
+
+        #on regarde si on a gagné 
+        if not'_' in self.__motCache :
+            self.partieGagnee()
+            
+    def afficheMot(self):
+        self.__MotComplete.set(text='Mot : ' + self.__motCache)
+            
+    def partieGagnee(self):
+        self.__motCache= 'Victoire ! Le mot était : '+self.__motMystere
+        self.afficheMot()
         
  ###DEF DE LA CLASSE ZoneAffichage
  
