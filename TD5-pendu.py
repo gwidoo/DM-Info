@@ -22,6 +22,10 @@ class FenPrincipale(Tk):
         self.configure(bg="pink") #on colore la fenêtre prinicipale en rose
         self.title('Jeu du pendu') #on nomme la fenêtre principale
         
+        #on charge le fichier de mots chargeMots
+        self.chargeMots()
+        
+        
 ###on définit la barre d'outils qui est une Frame
         self.__barreOutils=Frame(self,bg="white")
         self.__barreOutils.pack(side=TOP,padx=10,pady=10)
@@ -59,11 +63,19 @@ class FenPrincipale(Tk):
             self.__buttoni=Button(self.__clavier,text = chr(ord('A')+i)) #la commande t = chr(ord('A')+i) transforme un entier en une chaîne de caractère
             self.__boutons.append(self.__buttoni)
             self.__buttoni.config(state=DISABLED) #à l'ouverture de la page, tous les boutons sont grisés
+            self.__buttoni.config(command=self.select)
+            
             #on les met mtn en forme de clavier classique grâce à la commande grid
             if i<21 :#il y a 7 lettres par ligne et 3 lignes complètes donc 21 lettres à placer en haut
                 self.__buttoni.grid(row=i//7,column=i%7)  #grid est une nouvelle méthode de ranger, plus pratique ici que pack
             else:
                 self.__buttoni.grid(row=4,column=i%7+1) #on met à part les lettres qu'on a tout en bas du clavier, qui sont séparés d'un trou de la frame
+    
+    
+    
+    def select(self,lettre):
+        print('Sélection de la lettre'+lettre)
+        
         
         
 ###on implémente le comportement des boutons
@@ -83,7 +95,6 @@ class FenPrincipale(Tk):
         s= f.read()
         self.__mots = s.split('\n')
         f.close()
-        return self.__mots
             
         
     def nouvellePartie(self):
@@ -97,14 +108,15 @@ class FenPrincipale(Tk):
             
         #on dégrise les boutons lettres du clavier
         for i in range(26):
-            self.__boutons[i].set_state(NORMAL)
+            self.__boutons[i].config(state=NORMAL)
                 
         #on efface le dessin du pendu précédent
-        for j in self.__listeFormes:
-            j.config(state='hidden')
-
+        self.cacheFormes()
         
- 
+    
+    
+    def traitement(self):
+        pass
     
     
         
@@ -139,7 +151,9 @@ class ZoneAffichage(Canvas):
         self.__listeFormes.append(Rectangle(self, 175, 205,  10,  40, "black"))
         self.__listeFormes.append(Rectangle(self, 191, 205,  10,  40, "black"))
         
-        
+        #au lancement de la partie, toutes les formes du pendu sont cachées
+        self.cacheFormes()
+    
 ###on crée les fonctions qui permettent de cacher (au début) ou de faire apparaître les formes du pendu 
     def cacheFormes(self):
         for i in range(len(self.__listeFormes)) :
@@ -160,15 +174,14 @@ class MonBoutonLettre(Button):
         self.__fenetre=fenetre
         self.__lettre=a #notre bouton est associé à une unique lettre de l'alphabet
         
-        #on charge le fichier de mots chargeMots
-        self.chargeMots()
+        
         
         #on initialise une nouvelle partie
         self.nouvellePartie() 
         
     def cliquer(self):
         self.config(state=DISABLED)
-        self.__fenetre.traitement(self.__text) #lorsqu'on clique sur le bouton 
+        self.__fenetre.traitement(self.__text) #lorsqu'on clique sur le bouton, on appelle traitement, définit dans FenPrincipale
         
         
      
