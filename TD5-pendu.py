@@ -63,14 +63,14 @@ class FenPrincipale(Tk):
 
         #création du menu déroulant    
         #on rajoute la commande lambda dans la commande pour éviter que la fonction soit appelée au lancement du jeu
-        self.__menuDeroulant1=Menu(self.__buttonMenu)
-        self.__menuDeroulant1.add_command(label='CouleurFenPrin', command = lambda : self.modifierColorInterface(0))
-        self.__menuDeroulant1.add_command(label='CouleurZoneAff', command = lambda : self.modifierColorInterface(1))
-        self.__menuDeroulant1.add_command(label='CouleurClavier', command = lambda : self.modifierColorInterface(2))
-        self.__menuDeroulant1.add_command(label='CouleurNouvellePartie', command = lambda : self.modifierColorInterface(3))
-        self.__menuDeroulant1.add_command(label='CouleurQuitter', command = lambda : self.modifierColorInterface(4))
-        self.__menuDeroulant1.add_command(label='CouleurUndo', command = lambda : self.modifierColorInterface(5))
-        self.__menuDeroulant1.add_command(label='CouleurBonhomme', command = self.modifierColorCanvas)
+        self.__menuDeroulant=Menu(self.__buttonMenu)
+        self.__menuDeroulant.add_command(label='CouleurFenPrin', command = lambda : self.modifierColorInterface(0))
+        self.__menuDeroulant.add_command(label='CouleurZoneAff', command = lambda : self.modifierColorInterface(1))
+        self.__menuDeroulant.add_command(label='CouleurClavier', command = lambda : self.modifierColorInterface(2))
+        self.__menuDeroulant.add_command(label='CouleurNouvellePartie', command = lambda : self.modifierColorInterface(3))
+        self.__menuDeroulant.add_command(label='CouleurQuitter', command = lambda : self.modifierColorInterface(4))
+        self.__menuDeroulant.add_command(label='CouleurUndo', command = lambda : self.modifierColorInterface(5))
+        self.__menuDeroulant.add_command(label='CouleurBonhomme', command = self.modifierColorCanvas)
         self.__buttonMenu.configure(menu=self.__menuDeroulant1)
         
         
