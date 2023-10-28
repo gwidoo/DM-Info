@@ -59,7 +59,7 @@ class FenPrincipale(Tk):
 ###on rajoute un bouton pour faire apparaître un menu déroulant dans le but de pouvoir personnaliser les couleurs de l'interface
         self.__buttonMenu = Menubutton(self.__barreOutils,text='Personnaliser')
         self.__buttonMenu.pack(side=LEFT, padx=10,pady=10)
-        self.__buttonMenu.config(bg='grey')
+        self.__buttonMenu.config(bg='black',fg='white')
 
         #création du menu déroulant    
         #on rajoute la commande lambda dans la commande pour éviter que la fonction soit appelée au lancement du jeu
