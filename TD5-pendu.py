@@ -1,30 +1,16 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sat Oct 21 07:29:26 2023
-
-@author: celin
-"""
 
 from tkinter import *
 from tkinter import colorchooser
 from random import randint
 from formes import *
 
-#je n'arrive pas à dégriser les lettres en cliquant sur nouvelle partie ni à choisir un mot au hasard
-#problème lors  de la création des pièces du dessin du pendu et aussi du set.state
-
 ###DEF DE LA CLASSE FenPrincipale
-
 
 class FenPrincipale(Tk):
     def __init__(self):
         Tk.__init__(self)
-        self.configure(bg="purple") #on colore la fenêtre prinicipale en rose
+        self.configure(bg="pink") #on colore la fenêtre prinicipale en rose
         self.title('Jeu du pendu') #on nomme la fenêtre principale
-        
-        #on charge le fichier de mots chargeMots
-        self.__mots=self.chargeMots() #on récupère la liste de la fonction
-        
         
 ###on définit la barre d'outils qui est une Frame
         self.__barreOutils=Frame(self,bg="white")
@@ -37,185 +23,189 @@ class FenPrincipale(Tk):
         self.__buttonQuit = Button(self.__barreOutils, text='Quitter')
         self.__buttonQuit.pack(side=LEFT, padx=5, pady=5)
         
-###on définit la grande zone d'affichage
-        self.__zoneAffichage=ZoneAffichage(self,400,300)
-        self.__zoneAffichage.pack(side=TOP,padx=10,pady=10)
+        #on implémente le comportement des boutons
+        
+        self.__buttonQuit.config(command=self.destroy)
+        self.__buttonNouvellePartie.config(command=self.nouvellePartie)
+        
+###on définit la grande zone d'affichage du pendu
+        self.__zoneAffichage=ZoneAffichage(self,width=400,height=300,bg='#aaaaaa')
+        self.__zoneAffichage.pack(side=TOP,padx=10,pady=0)
         self.__zoneAffichage.configure(bg="white")
         
-###on définit la zone du mot à découvrir qui est une zone d'affichage
-        self.__zoneMot=ZoneAffichage(self,80,20)
-        self.__zoneMot.pack(side=TOP,padx=30,pady=5)
-        self.__zoneMot.configure(bg="white")
-        
-        
-        #mot à écrire qui est une étiquette
-        self.__MotComplete=Label(self.__zoneMot,text='Mot :')
-        self.__MotComplete.pack(side=LEFT, padx=5,pady=5)
-        
+###on définit le mot à découvrir      
+        self.__displayText = StringVar()
+        self.__displayText.set('Sélectionner "Nouvelle Partie"')
+        self.__display = Label(self,  textvariable=self.__displayText)
+        self.__display.pack(side=TOP, padx=5, pady=5)
+               
 ###on définit le clavier qui est une frame 
         self.__clavier=Frame(self,bg='white')
         self.__clavier.pack(side=BOTTOM,padx=10,pady=10)
      
         #création des 26 boutons du clavier
-        self.__boutons=[]
-        for i in range(0,26):
-            #chaque bouton est un élément de la classe MonBoutonLettre
-            self.__buttoni=MonBoutonLettre(self.__clavier, self, chr(ord('A')+i))#la commande t = chr(ord('A')+i) transforme un entier en une chaîne de caractère
-            self.__boutons.append(self.__buttoni)
-            self.__buttoni.config(state=DISABLED) #à l'ouverture de la page, tous les boutons sont grisés
-            
-            #on les met mtn en forme de clavier classique grâce à la commande grid
-            if i<21 :#il y a 7 lettres par ligne et 3 lignes complètes donc 21 lettres à placer en haut
-                self.__buttoni.grid(row=i//7,column=i%7)  #grid est une nouvelle méthode de ranger, plus pratique ici que pack
-            else:
-                self.__buttoni.grid(row=4,column=i%7+1) #on met à part les lettres qu'on a tout en bas du clavier, qui sont séparés d'un trou de la frame
-    
-###on implémente le comportement des boutons
-        
-        #bouton quitter
-        self.__buttonQuit.config(command=self.destroy)
-        
-        #bouton Nouvelle Partie
-        self.__buttonNouvellePartie.config(command=self.nouvellePartie)
-  
-    
-  
+        self.__boutons = []
+        for i in range(26):
+            t= MonBoutonLettre(self.__clavier, text=chr(ord('A')+i) , width=7, bg='#cccccc')
+            t.grid(column=i%7 + (1 if i>20 else 0), row=i//7, padx=2, pady=2)
+            t.config(state=DISABLED, command=self.traitement)
+            self.__boutons.append(t)
+
 ###EXERCICE 7   
+
 ###on rajoute un bouton pour faire apparaître un menu déroulant dans le but de pouvoir personnaliser les couleurs de l'interface
-        self.__buttonMenu = Button(self.__barreOutils,text='Personnaliser')
+        self.__buttonMenu = Menubutton(self.__barreOutils,text='Personnaliser')
         self.__buttonMenu.pack(side=LEFT, padx=10,pady=10)
         self.__buttonMenu.config(bg='grey')
-        self.__buttonMenu.config(command=self.proposerMenu)
 
-        #on crée une frame dans laquelle on va ranger les boutons de personnalisation        
-
-        self.__menu=Frame(self.__barreOutils,bg='black')
-        
-        #on implémente les différents boutons pour changer les couleurs
-        
-        #Fenêtre Principale
-        self.__buttonColorFP = Button(self.__menu, text='CouleurFenPrin')
-        self.__buttonColorFP.pack(side=LEFT, padx=5, pady=5)
-        self.__buttonColorFP.config(command=self.selectColor)
-        
-        #Zone d'affichage
-        # self.__buttonColorZA = Button(self.__menu, text='CouleurZoneAff')
-        # self.__buttonColorZA.pack(side=LEFT, padx=5, pady=5)
-        # self.__buttonColorZA.config(command=self.selectColor)
-        
-        # #Clavier
-        # self.__buttonColorCL = Button(self.__menu, text='CouleurClavier')
-        # self.__buttonColorCL.pack(side=LEFT, padx=5, pady=5)
-        # self.__buttonColorCL.config(command=self.selectColor)
-        
-        # #Nouvelle Partie
-        # self.__buttonColorNouvellePartie = Button(self.__menu, text='CouleurNouvellePartie')
-        # self.__buttonColorNouvellePartie.pack(side=LEFT, padx=5, pady=5)
-        # self.__buttonColorNouvellePartie.config(command=self.selectColor)
-        
-        # #Quitter
-        # self.__buttonColorQuit = Button(self.__menu, text='CouleurQuitter')
-        # self.__buttonColorQuit.pack(side=LEFT, padx=5, pady=5)
-        # self.__buttonColorQuit.config(command=self.selectColor)
+        #création du menu déroulant         
+        self.__menuDeroulant1=Menu(self.__buttonMenu)
+        # self.__menuDeroulant1.add_command(label='CouleurFenPrin', command = self.selectColor)
+        # self.__menuDeroulant1.add_command(label='CouleurZoneAff', command = self.selectColor)
+        # self.__menuDeroulant1.add_command(label='CouleurClavier', command = self.selectColor)
+        # self.__menuDeroulant1.add_command(label='CouleurNouvellePartie', command = self.selectColor)
+        # self.__menuDeroulant1.add_command(label='CouleurQuitter', command = self.selectColor)
+        # self.__menuDeroulant1.add_command(label='CouleurUndo', command = self.selectColor)
+        self.__menuDeroulant1.add_command(label='CouleurBonhomme', command = self.modifierColorCanvas)
+        self.__buttonMenu.configure(menu=self.__menuDeroulant1)
         
         
-        #on teste déjà si cette façon de faire marche pr un bouton
-        #Undo
-        self.__buttonColorUndo= Button(self.__menu, text='CouleurUndo')
-        self.__buttonColorUndo.pack(side=LEFT, padx=5, pady=5)
-        self.__buttonColorUndo.config(command=self.selectColor(self.__buttonColorUndo))
+     
+ #    def proposerMenu(self):
+ # #on crée une frame dans laquelle on va ranger les boutons de personnalisation        
+ #        self.__menu=Frame(self.__barreOutils,bg='black')
         
-        #Homme
-        self.__buttonColorBonhomme= Button(self.__menu, text='CouleurBonhomme')
-        self.__buttonColorBonhomme.pack(side=LEFT, padx=5, pady=5)
-        self.__buttonColorBonhomme.config(command=self.modifierColorCanvas)
+ #        #on implémente les différents boutons pour changer les couleurs
+ #        #Fenêtre Principale
+ #        self.__buttonColorFP = Button(self.__menu, text='CouleurFenPrin')
+ #        self.__buttonColorFP.pack(side=LEFT, padx=5, pady=5)
+ #        self.__buttonColorFP.config(command=self.selectColor)
+        
+ #        #Zone d'affichage
+ #        self.__buttonColorZA = Button(self.__menu, text='CouleurZoneAff')
+ #        self.__buttonColorZA.pack(side=LEFT, padx=5, pady=5)
+ #        self.__buttonColorZA.config(command=self.selectColor)
+        
+ #        # #Clavier
+ #        self.__buttonColorCL = Button(self.__menu, text='CouleurClavier')
+ #        self.__buttonColorCL.pack(side=LEFT, padx=5, pady=5)
+ #        self.__buttonColorCL.config(command=self.selectColor)
+        
+ #        # #Nouvelle Partie
+ #        self.__buttonColorNouvellePartie = Button(self.__menu, text='CouleurNouvellePartie')
+ #        self.__buttonColorNouvellePartie.pack(side=LEFT, padx=5, pady=5)
+ #        self.__buttonColorNouvellePartie.config(command=self.selectColor)
+        
+ #        # #Quitter
+ #        self.__buttonColorQuit = Button(self.__menu, text='CouleurQuitter')
+ #        self.__buttonColorQuit.pack(side=LEFT, padx=5, pady=5)
+ #        self.__buttonColorQuit.config(command=self.selectColor)
         
         
-    def modifierColorCanvas(self):
-    	color = colorchooser.askcolor(color=None)
-    	self.__zoneAffichage.setColor(color[1])
-    	print(color[1])
+ #        #on teste déjà si cette façon de faire marche pr un bouton
+ #        #Undo
+ #        self.__buttonColorUndo= Button(self.__menu, text='CouleurUndo')
+ #        self.__buttonColorUndo.pack(side=LEFT, padx=5, pady=5)
+ #        self.__buttonColorUndo.config(command=self.selectColor(self.__buttonColorUndo))
         
-    def selectColor(self,button):
+ #        #Bonhomme
+ #        self.__buttonColorBonhomme= Button(self.__menu, text='CouleurBonhomme')
+ #        self.__buttonColorBonhomme.pack(side=LEFT, padx=5, pady=5)
+ #        self.__buttonColorBonhomme.config(command=self.modifierColorCanvas)
+        
+        
+    # def modifierColorCanvas(self):
+    #     color = colorchooser.askcolor(color=None)
+    #     self.__zoneAffichage.setColor(color[1])
+    #     print(color[1])
+        
+    def modifierColorCanvas(self):    
         color = colorchooser.askcolor(color=None)
-        self.__zoneAffichage.setColor(color[1])
-        button.config(bg='color[1]')
+        for i in self.__listeFormes:
+            i.setColor(color[1])
+            print(color[1])
         
-        
+   
+    # def selectColor(self,label):
+    #     color = colorchooser.askcolor(color=None)
+    #     self.__zoneAffichage.setColor(color[1])
+    #     label.config(bg='color[1]')
         
 ###FIN DE L'EXERCICE 7        
 
-###on définit les fonctions relatives aux fonctionnement du jeu
-    def chargeMots(self): #charge la liste des mots possibles
+#charge la liste des mots possibles, enregistrés dans un fichier txt
         f=open('mots.txt', 'r')
         s= f.read()
         self.__mots = s.split('\n')
         f.close()
-            
-        
+               
     def nouvellePartie(self):
         #on charge self.__mots et on tire un mot aux hasard dans self.__mots
-        n=randint(0,len(self.__mots)-1) #on choisit au hasard un entier entre 0 et le nombre de mots possibles
-        self.__motMystere=self.__mots[n] #on récupère le mot choisi aléatoirement parmi la liste self.__mots
-            
-        #on réinitialise le mot à découvrir
-        self.__motCache=len(self.__motMystere)*'_'
-        self.__MotComplete.config(text='Mot : ' + self.__motCache) #on modifie le texte à afficher en dessous de la zone d'affichage du pendu
+        self.__motMystere=self.__mots[randint(0,len(self.__mots))] #on récupère le mot choisi aléatoirement parmi la liste self.__mots
+        self.__motCache=len(self.__motMystere)*'_' #on réinitialise le mot à découvrir
+        self.afficheMot() #on modifie le texte à afficher en dessous de la zone d'affichage du pendu
             
         #on dégrise les boutons lettres du clavier
-        for i in range(26):
-            self.__boutons[i].config(state=NORMAL)
+        for i in self.__boutons:
+            i.config(state=NORMAL)
                 
         #on efface le dessin du pendu précédent
-        self.cacheFormes()
+        self.__erreurs= 0
+        self.__zoneAffichage.tracer(0)
       
-        
-    def traitement(self,lettre):
-        print('Sélection de la lettre' + lettre)
-        nouveauMotCache=''
-        for i,c in enumerate(self.__motMystere):
-            if c==lettre:
-                nouveauMotCache+=lettre
-            else: 
-                nouveauMotCache+= self.__motCache[i]
-                
-        #nombre d'erreurs et mise à jour du pendu
-        if self.__motCache == nouveauMotCache:
-            self.__erreurs+=1
-            self.__pendu.tracer(self.__erreurs)
-        
-        #affichage du mot caché mis à jour
-        self.__motCache=nouveauMotCache
-        self.afficheMot()
-
-        #on regarde si on a gagné 
-        if not'_' in self.__motCache :
-            self.partieGagnee()
-            
     def afficheMot(self):
-        self.__MotComplete.set(text='Mot : ' + self.__motCache)
+        self.__displayText.set('Mot : ' + self.__motCache)
+                
             
+    def traitement(self,lettre):
+		# mise à jour du mot caché (contenant les *)
+        nouveauMotCache = ''
+        for i,c in enumerate(self.__motMystere):
+            if c== lettre:
+                nouveauMotCache += lettre
+            else:
+                nouveauMotCache += self.__motCache[i]		
+	
+		# nombre d'erreurs et mise à jour du pendu
+        if self.__motCache == nouveauMotCache:
+            self.__erreurs += 1
+            self.__zoneAffichage.tracer(self.__erreurs)
+
+		# affichage du mot caché mis à jour
+        self.__motCache = nouveauMotCache
+        self.afficheMot()
+			
+		# a-t-on gagné ?
+        if not '_' in self.__motCache:
+            self.partieGagnee()
+		
+		# a-t-on perdu ?
+        if self.__erreurs > 9:
+            self.partiePerdue()
+			
     def partieGagnee(self):
-        self.__motCache= 'Victoire ! Le mot était : '+self.__motMystere
-        self.afficheMot()
-        
+        self.__displayText.set('Victoire ! Le mot était: '+self.__motCache) #le motCache est a se stade le même que le mot mystère puisque toutes les lettres ont été trouvées
+        self.griserClavier() #on grise le clavier car on revient la parti est finie, on ne peut plus 
+	
     def partiePerdue(self):
-        self.__motCache = 'Défaite ! Le mot était :' + self.__motMystere
-        self.afficheMot()
-        
-     def tracer(self,n):
-         pass
+        self.__displayText.set('Défaite ! Le mot était: '+self.__motMystere)
+        self.griserClavier()
+	
+    def griserClavier(self):
+        for t in self.__boutons:
+            t.config(state=DISABLED)
          
  ###DEF DE LA CLASSE ZoneAffichage
  
         
 class ZoneAffichage(Canvas):
-    def __init__(self, parent, largeur, hauteur):
-        Canvas.__init__(self, parent, width=largeur, height=hauteur)
+    def __init__(self,*args,**kwargs):
+	# on appelle le constructeur de la classe mère avec la même liste
+	# d'arguments (args) et les mêmes arguments nommés (kwargs) que
+	# ceux qu'on a nous-même reçus...
+        Canvas.__init__(self, *args, **kwargs)
         self.__listeFormes=[] #on va stocker nos formes du pendu dans cette liste
 
-
-##on s'occupe de la partie du dessin du pendu
 
 ###on ajoute les formes qui constituent le pendu à la liste des formes
         
@@ -226,7 +216,7 @@ class ZoneAffichage(Canvas):
         self.__listeFormes.append(Rectangle(self, 183,  67,  10,  40, "beige"))
         
         # Tete, Tronc
-        self.__listeFormes.append(Rectangle(self, 178, 120,  20,  20, "black"))
+        self.__listeFormes.append(Ellipse(self, 188, 125,  17,  17, "black"))
         self.__listeFormes.append(Rectangle(self, 175, 143,  26,  60, "black"))
         
         # Bras gauche et droit
@@ -236,46 +226,43 @@ class ZoneAffichage(Canvas):
         # Jambes gauche et droite
         self.__listeFormes.append(Rectangle(self, 175, 205,  10,  40, "black"))
         self.__listeFormes.append(Rectangle(self, 191, 205,  10,  40, "black"))
-        
-        #au lancement de la partie, toutes les formes du pendu sont cachées
+    
+        #on cache toutes les formes au début 
         self.cacheFormes()
-    
-    
-###on crée les fonctions qui permettent de cacher (au début) ou de faire apparaître les formes du pendu 
-    def cacheFormes(self):
-        for i in range(len(self.__listeFormes)) :
-            self.__listeFormes[i].set_state('hidden')
-            
-    def dessinePendu(self,i):
-        if i <=len(self.__listeFormes): #i correspond au numéro de la forme attribué en fonction de son ordre d'apparition
-            self.__listeFormes[i].set_state('normal') #on décache seulement la ième forme de la liste des formes 
-                
         
+    def cacheFormes(self):
+        for i in self.__listeFormes:
+            i.set_state('hidden')
+            
+            
+    def setColor(self,color):
+        self.__couleur = color
+        
+        
+    def tracer(self,n):
+        for i in range(10):
+            s = 'normal' if i < n else 'hidden'
+            self.__listeFormes[i].set_state(s)     
    
     
 ###CREATION DE LA CLASSE MonBoutonLettre
 
 class MonBoutonLettre(Button):
-    def __init__(self,parent,fenetre,a):
-        Button.__init__(self,parent,text=t,state=DISABLED)
-        self.__fenetre=fenetre
-        self.__lettre=a #notre bouton est associé à une unique lettre de l'alphabet
-        
-        
-        
-        #on initialise une nouvelle partie
-        self.nouvellePartie() 
-        
+    def __init__(self,*args,**kwargs):
+        Button.__init__(self, *args, **kwargs)
+        self.config(**kwargs)
+		
+    def config(self,**kwargs):
+        Button.config(self, **kwargs)
+        if'text' in kwargs:
+            self.__lettre = kwargs['text']
+        if'command' in kwargs:
+            self.__command = kwargs['command']
+            Button.config(self, command=self.cliquer)
+				
     def cliquer(self):
-        self.config(state=DISABLED)
-        self.__fenetre.traitement(self.__lettre) #lorsqu'on clique sur le bouton, on appelle traitement, définit dans FenPrincipale
-        
-        
-     
-    
-
-
-
+        self.config(state=DISABLED) #quand on clique sur le bouton pour choisir une lettre, celui-ci se grise ensuite
+        self.__command(self.__lettre)
         
 if __name__ == "__main__":
 	fen = FenPrincipale()
