@@ -84,8 +84,8 @@ class FenPrincipale(Tk):
         #on vérifie que la couleur a été choisie
         if color[1] : 
             #on ne récupère que les formes du corps
-            for i in range(4,10): 
-                self.__zoneAffichage.itemconfig(self.__zoneAffichage.__listeFormes[i],fill=color[1])
+            for i in range(4, 10):  
+                self.__zoneAffichage.itemconfig(self.__listeFormes[i - 4], fill=color[1])
         
         
         
