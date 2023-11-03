@@ -28,11 +28,12 @@ class FenPrincipale(Tk):
         
         # création de la liste des opérations
         self.__operation=[]
-        #on implémente le comportement des boutons
         
+        #on implémente le comportement des boutons
         self.__buttonQuit.config(command=self.destroy)
         self.__buttonNouvellePartie.config(command=self.nouvellePartie)
         self.__buttonUndo.config(command=self.undo)
+        
 ###on définit la grande zone d'affichage du pendu
         self.__zoneAffichage=ZoneAffichage(self,width=400,height=300,bg='#aaaaaa')
         self.__zoneAffichage.pack(side=TOP,padx=10,pady=0)
@@ -68,13 +69,13 @@ class FenPrincipale(Tk):
         #création du menu déroulant    
         #on rajoute la commande lambda dans la commande pour éviter que la fonction soit appelée au lancement du jeu
         self.__menuDeroulant=Menu(self.__buttonMenu)
-        self.__menuDeroulant.add_command(label='CouleurFenPrin', command = lambda : self.modifierColorInterface(0))
-        self.__menuDeroulant.add_command(label='CouleurZoneAff', command = lambda : self.modifierColorInterface(1))
-        self.__menuDeroulant.add_command(label='CouleurClavier', command = lambda : self.modifierColorInterface(2))
-        self.__menuDeroulant.add_command(label='CouleurNouvellePartie', command = lambda : self.modifierColorInterface(3))
-        self.__menuDeroulant.add_command(label='CouleurQuitter', command = lambda : self.modifierColorInterface(4))
-        self.__menuDeroulant.add_command(label='CouleurUndo', command = lambda : self.modifierColorInterface(5))
-        self.__menuDeroulant.add_command(label='CouleurBonhomme', command = self.modifierColorCanvas)
+        self.__menuDeroulant.add_command(label='Couleur Fenêtre Principale', command = lambda : self.modifierColorInterface(0))
+        self.__menuDeroulant.add_command(label='Couleur Zone Affichage', command = lambda : self.modifierColorInterface(1))
+        self.__menuDeroulant.add_command(label='Couleur Clavier', command = lambda : self.modifierColorInterface(2))
+        self.__menuDeroulant.add_command(label='Couleur Nouvelle Partie', command = lambda : self.modifierColorInterface(3))
+        self.__menuDeroulant.add_command(label='Couleur Quitter', command = lambda : self.modifierColorInterface(4))
+        self.__menuDeroulant.add_command(label='Couleur Undo', command = lambda : self.modifierColorInterface(5))
+        self.__menuDeroulant.add_command(label='Couleur Bonhomme', command = self.modifierColorCanvas)
         self.__buttonMenu.configure(menu=self.__menuDeroulant)
         
         
@@ -215,6 +216,7 @@ class FenPrincipale(Tk):
                 self.__zoneAffichage.cacheFormes()
                 self.__zoneAffichage.tracer(self.__erreurs)
                 self.afficheMot()
+                
  ###DEF DE LA CLASSE ZoneAffichage
  
         
